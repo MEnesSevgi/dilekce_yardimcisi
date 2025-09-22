@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+  <meta charset="UTF-8">
+  <title>Dilekçe Yazma Yardımcısı</title>
+  
+
+</head>
+<body>
+<!-- partial:index.partial.html -->
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Gelişmiş Dilekçe Yazma Yardımcısı</title>
+  <style>
+    body {
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      max-width: 720px;
+      margin: 30px auto;
+      padding: 20px;
+      background-color: #fefefe;
+      border-radius: 10px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.1);
+      color: #222;
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 25px;
+      color: #004085;
+    }
+    label {
+      display: block;
+      margin-top: 15px;
+      font-weight: 600;
+      color: #003366;
+    }
+    input[type="text"],
+    input[type="date"],
+    input[type="tel"],
+    textarea,
+    select {
+      width: 100%;
+      padding: 10px;
+      margin-top: 6px;
+      border: 1.5px solid #ccc;
+      border-radius: 6px;
+      font-size: 15px;
+      font-family: inherit;
+      box-sizing: border-box;
+      transition: border-color 0.3s ease;
+    }
+    input[type="text"]:focus,
+    input[type="date"]:focus,
+    input[type="tel"]:focus,
+    textarea:focus,
+    select:focus {
+      border-color: #004085;
+      outline: none;
+    }
+    textarea {
+      resize: vertical;
+      min-height: 80px;
+    }
+    button {
+      margin-top: 25px;
+      background-color: #004085;
+      color: white;
+      border: none;
+      padding: 14px 28px;
+      font-size: 16px;
+      font-weight: 600;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background-color 0.25s ease;
+    }
+    button:hover {
+      background-color: #002752;
+    }
+    #preview {
+      margin-top: 40px;
+      padding: 25px 30px;
+      background-color: #f8f9fa;
+      border: 1px solid #ced4da;
+      border-radius: 8px;
+      white-space: pre-wrap;
+      font-size: 16px;
+      line-height: 1.6;
+      color: #212529;
+    }
+    .centered-bold {
+      text-align: center;
+      font-weight: 700;
+      text-transform: uppercase;
+      font-size: 18px;
+      margin-bottom: 12px;
+    }
+    .right-align {
+      text-align: right;
+    }
+    .ekler, .iletisim {
+      margin-top: 30px;
+      font-size: 15px;
+    }
+    /* Sekme butonları */
+    #tabs {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+    #tabs button {
+      flex: 1;
+      max-width: 150px;
+    }
+    #tabs button.active {
+      background-color: #002752;
+    }
+  </style>
+</head>
+<body>
+  <h1>Gelişmiş Dilekçe Yazma Yardımcısı</h1>
+
+  <div id="tabs">
+    <button id="tab-form" class="active" type="button">Dilekçe Formu</button>
+    <button id="tab-templates" type="button">Hazır Şablonlar</button>
+  </div>
+
+  <section id="section-form">
+    <form id="dilekceForm">
+      <label for="kurum">1. Başlık (Kurum Adı)</label>
+      <input type="text" id="kurum" name="kurum" placeholder="Örn: T.C. İSTANBUL BÜYÜKŞEHİR BELEDİYESİNE" required />
+
+      <label for="konu">2. Konu</label>
+      <select id="konu" name="konu" required>
+        <option value="">-- Konu Seçiniz --</option>
+        <option>İş Başvurusu</option>
+        <option>İzin Talebi</option>
+        <option>Şikayet</option>
+        <option>Bilgi Edinme</option>
+        <option>Maaş Artışı Talebi</option>
+        <option>Görev Değişikliği Talebi</option>
+        <option>Diğer</option>
+      </select>
+
+      <label for="icerik">3. Metin (Giriş - Gelişme - Sonuç)</label>
+      <textarea id="icerik" name="icerik" placeholder="Dilekçe metnini yazınız" required></textarea>
+
+      <label for="tarih">4. Tarih</label>
+      <input type="date" id="tarih" name="tarih" required />
+
+      <label for="isim">5. Adınız ve Soyadınız</label>
+      <input type="text" id="isim" name="isim" placeholder="Adınız ve Soyadınız" required />
+
+      <label for="ekler">6. Ekler (Varsa, her belgeyi yeni satıra yazınız)</label>
+      <textarea id="ekler" name="ekler" placeholder="Örn: Özgeçmiş, Diploma fotokopisi"></textarea>
+
+      <label for="adres">7. Adres (Opsiyonel)</label>
+      <input type="text" id="adres" name="adres" placeholder="Adresinizi yazınız" />
+
+      <label for="telefon">8. Telefon (Opsiyonel)</label>
+      <input type="tel" id="telefon" name="telefon" placeholder="Telefon numaranız" />
+
+      <button type="button" id="previewBtn">Dilekçeyi Önizle</button>
+      <button type="submit" style="margin-left: 10px;">Word Dosyası Olarak İndir</button>
+    </form>
+
+    <div id="preview" aria-label="Dilekçe Önizlemesi" role="region" tabindex="0"></div>
+  </section>
+
+  <section id="section-templates" style="display:none;">
+    <h2>Hazır Dilekçe Şablonları</h2>
+    <ul id="template-list" style="list-style:none; padding-left:0;">
+      <!-- Şablonlar JS ile gelecek -->
+    </ul>
+    <button type="button" id="backToForm" style="margin-top: 20px;">Form Sayfasına Dön</button>
+  </section>
+
+  <script src="https://cdn.jsdelivr.net/npm/docx@7.1.0/build/index.min.js"></script>
+  <script>
+    const { Document, Packer, Paragraph, TextRun, AlignmentType } = docx;
+
+    // Bayrak: Hazır şablon kullanıldı mı?
+    let isTemplateUsed = false;
+
+    // Sekme geçişleri
+    const tabForm = document.getElementById("tab-form");
+    const tabTemplates = document.getElementById("tab-templates");
+    const sectionForm = document.getElementById("section-form");
+    const sectionTemplates = document.getElementById("section-templates");
+
+    tabForm.addEventListener("click", () => {
+      tabForm.classList.add("active");
+      tabTemplates.classList.remove("active");
+      sectionForm.style.display = "block";
+      sectionTemplates.style.display = "none";
+      // Form sekmesine dönüldüğünde bayrağı sıfırla
+      isTemplateUsed = false;
+    });
+
+    tabTemplates.addEventListener("click", () => {
+      tabTemplates.classList.add("active");
+      tabForm.classList.remove("active");
+      sectionTemplates.style.display = "block";
+      sectionForm.style.display = "none";
+    });
+
+    document.getElementById("backToForm").addEventListener("click", () => {
+      tabForm.click();
+    });
+
+// Hazır şablonlar
+    const templates = [
+      {
+        konu: "İş Başvurusu",
+        kurum: "T.C. İSTANBUL BÜYÜKŞEHİR BELEDİYESİNE",
+        icerik: "Sayın Yetkili,\n\nŞirketinizde açık bulunan pozisyona iş başvurusunda bulunmak istiyorum. Özgeçmişim ekte sunulmuştur.\n\nBilgilerinize arz ederim.",
+      },
+      {
+        konu: "İzin Talebi",
+        kurum: "T.C. XYZ ŞİRKETİNE",
+        icerik: "Sayın Yetkili,\n\nBelirtilen tarihler arasında izin kullanmak istediğimi arz ederim.\n\nGereğini rica ederim.",
+      },
+      {
+        konu: "Şikayet",
+        kurum: "T.C. ABC KURUMUNA",
+        icerik: "Sayın Yetkili,\n\nAşağıda belirttiğim hususlarla ilgili şikayetimi arz ederim.\n\nGereğini bilgilerinize sunarım.",
+      },
+      {
+        konu: "Bilgi Edinme",
+        kurum: "T.C. İLÇE MÜDÜRLÜĞÜNE",
+        icerik: "Sayın Yetkili,\n\nAşağıdaki konular hakkında bilgi edinmek istiyorum.\n\nBilgilerinize arz ederim.",
+      },
+      {
+        konu: "Maaş Artışı Talebi",
+        kurum: "T.C. ŞİRKETİNE",
+        icerik: "Sayın Yetkili,\n\nMaaşımda artış yapılmasını talep ediyorum.\n\nGereğini arz ederim.",
+      },
+      {
+        konu: "Görev Değişikliği Talebi",
+        kurum: "T.C. İŞYERİNE",
+        icerik: "Sayın Yetkili,\n\nGörev değişikliği talebimi arz ederim.\n\nBilgilerinize sunarım.",
+      },
+      
+      {
+    konu: "Kredi Başvurusu",
+    kurum: "T.C. BANKASI MÜDÜRLÜĞÜNE",
+    icerik: "Sayın Yetkili,\n\nKredi başvurusu yapmak istediğimi arz ederim. Gerekli belgeler ekte sunulmuştur.\n\nBilgilerinize arz ederim.",
+  },
+  {
+    konu: "Tazminat Talebi",
+    kurum: "T.C. ŞİRKETİNE",
+    icerik: "Sayın Yetkili,\n\nHakkım olan tazminatın ödenmesini talep ediyorum.\n\nGereğini arz ederim.",
+  },
+  {
+    konu: "Kira Sözleşmesi Uzatma Talebi",
+    kurum: "T.C. EV SAHİBİNE",
+    icerik: "Sayın Yetkili,\n\nKira sözleşmemizin uzatılmasını talep ediyorum.\n\nBilgilerinize arz ederim.",
+  },
+  {
+    konu: "Eğitim İzin Talebi",
+    kurum: "T.C. İŞYERİNE",
+    icerik: "Sayın Yetkili,\n\nEğitim programına katılmak için izin talebinde bulunuyorum.\n\nGereğini rica ederim.",
+  },
+  {
+    konu: "Referans Talebi",
+    kurum: "T.C. ESKİ İŞVERENİME",
+    icerik: "Sayın Yetkili,\n\nÇalıştığım süre boyunca referans mektubu talep etmekteyim.\n\nBilgilerinize arz ederim.",
+  },
+  {
+    konu: "İade Talebi",
+    kurum: "T.C. ŞİRKETİNE",
+    icerik: "Sayın Yetkili,\n\nYanlış gönderilen ürünün iadesini talep ediyorum.\n\nGereğini arz ederim.",
+  },
+  {
+    konu: "Ödeme Talebi",
+    kurum: "T.C. MÜŞTERİ HİZMETLERİNE",
+    icerik: "Sayın Yetkili,\n\nÖdeme işleminin yapılmasını talep ediyorum.\n\nBilgilerinize sunarım.",
+  },
+  {
+    konu: "İşten Ayrılma Bildirimi",
+    kurum: "T.C. İNSAN KAYNAKLARI BÖLÜMÜNE",
+    icerik: "Sayın Yetkili,\n\nİşten ayrılma kararımı bildiririm.\n\nGereğini arz ederim.",
+  },
+  {
+    konu: "Sağlık Raporu Talebi",
+    kurum: "T.C. SAĞLIK KURUMUNA",
+    icerik: "Sayın Yetkili,\n\nSağlık raporu talebinde bulunuyorum.\n\nBilgilerinize arz ederim.",
+  },
+  {
+    konu: "Proje Onayı Talebi",
+    kurum: "T.C. PROJE YÖNETİMİNE",
+    icerik: "Sayın Yetkili,\n\nHazırladığım projenin onaylanmasını talep ediyorum.\n\nGereğini arz ederim.",
+  },
+    {
+    konu: "Apartman Yönetimine Şikayet",
+    kurum: "XYZ Apartman Yönetimine",
+    icerik: "Sayın Yönetici,\n\nApartmanda yaşanan gürültü ve temizlik sorunları hakkında şikayetimi iletmek istiyorum. Konunun çözülmesini rica ederim.\n\nTeşekkür ederim.",
+  },
+  {
+    konu: "Okuldan Devamsızlık Mazereti",
+    kurum: "ABC İlkokulu Müdürlüğüne",
+    icerik: "Sayın Müdürüm,\n\nÖğrencinizin sağlık sorunları nedeniyle belirtilen tarihlerde okula devam edemediğini bildirir, mazeretini kabul etmenizi rica ederim.\n\nSaygılarımla.",
+  },
+  {
+    konu: "Kayıp Eşya Bildirimi",
+    kurum: "T.C. Emniyet Müdürlüğüne",
+    icerik: "Sayın Yetkili,\n\nX tarihinden itibaren kayıp olan eşyanın bulunması için gereğinin yapılmasını arz ederim.\n\nTeşekkür ederim.",
+  },
+  {
+    konu: "Abonelik İptali Talebi",
+    kurum: "XYZ Telekomünikasyon A.Ş.",
+    icerik: "Sayın Yetkili,\n\nHesabımın abonelik iptal işleminin gerçekleştirilmesini rica ederim.\n\nBilgilerinize sunarım.",
+  },
+  {
+    konu: "Kredi Kartı Limit Artışı Talebi",
+    kurum: "ABC Bankası Müşteri Hizmetlerine",
+    icerik: "Sayın Yetkili,\n\nKredi kartı limitimin artırılması hususunda gereğinin yapılmasını arz ederim.\n\nSaygılarımla.",
+  },
+  {
+    konu: "Çalışma Saatleri Değişikliği Talebi",
+    kurum: "T.C. İşveren Yetkilisine",
+    icerik: "Sayın Yetkili,\n\nÇalışma saatlerimin değiştirilmesini talep ediyorum.\n\nBilgilerinize arz ederim.",
+  },
+  {
+    konu: "Araç Ruhsatı Yenileme Talebi",
+    kurum: "T.C. Trafik Müdürlüğüne",
+    icerik: "Sayın Yetkili,\n\nAraç ruhsatımın yenilenmesini talep ediyorum.\n\nGereğini arz ederim.",
+  },
+  {
+    konu: "E-devlet Şifresi Talebi",
+    kurum: "T.C. Nüfus Müdürlüğüne",
+    icerik: "Sayın Yetkili,\n\nE-devlet şifresi talebinde bulunuyorum.\n\nBilgilerinize arz ederim.",
+  },
+  {
+    konu: "Su Aboneliği Başvurusu",
+    kurum: "XYZ Su ve Kanalizasyon İdaresi",
+    icerik: "Sayın Yetkili,\n\nYeni taşındığım adrese su aboneliği başvurusu yapmak istiyorum.\n\nGereğini arz ederim.",
+  },
+  {
+    konu: "Eğitim Bursu Talebi",
+    kurum: "ABC Vakfı",
+    icerik: "Sayın Yetkili,\n\nEğitim bursu talebinde bulunuyorum. Gerekli belgeler ekte sunulmuştur.\n\nBilgilerinize arz ederim.",
+  },
+  {
+    konu: "Kayıp Belge Bildirimi",
+    kurum: "T.C. Emniyet Müdürlüğüne",
+    icerik: "Sayın Yetkili,\n\nKimlik kartımı kaybettiğimi bildirir, gereğinin yapılmasını arz ederim.\n\nTeşekkür ederim.",
+  },
+  {
+    konu: "Öğrenci Belgesi Talebi",
+    kurum: "XYZ Üniversitesi Öğrenci İşlerine",
+    icerik: "Sayın Yetkili,\n\nÖğrenci belgesi talebinde bulunuyorum.\n\nGereğini arz ederim.",
+  },
+  {
+    konu: "Sağlık Raporu Talebi",
+    kurum: "T.C. Sağlık Kurumuna",
+    icerik: "Sayın Yetkili,\n\nSağlık raporu talebinde bulunuyorum.\n\nBilgilerinize arz ederim.",
+  },
+  {
+    konu: "Trafik Cezası İtirazı",
+    kurum: "T.C. Trafik Ceza Müdürlüğüne",
+    icerik: "Sayın Yetkili,\n\nTarafıma kesilen trafik cezasına itiraz etmekteyim. Gereğinin yapılmasını arz ederim.\n\nSaygılarımla.",
+  },
+  {
+    konu: "Kamu Görevlisi Atama Talebi",
+    kurum: "T.C. İnsan Kaynakları Bakanlığına",
+    icerik: "Sayın Yetkili,\n\nKamu görevlisi ataması ile ilgili talebimi arz ederim.\n\nBilgilerinize sunarım.",
+  }
+    ];
+
+    const templateList = document.getElementById("template-list");
+
+    function renderTemplates() {
+      templateList.innerHTML = "";
+      templates.forEach((tpl) => {
+        const li = document.createElement("li");
+        li.style.border = "1px solid #ccc";
+        li.style.padding = "12px";
+        li.style.marginBottom = "10px";
+        li.style.borderRadius = "6px";
+        li.style.cursor = "pointer";
+        li.innerHTML = `<strong>Konu:</strong> ${tpl.konu}<br/><strong>Kurum:</strong> ${tpl.kurum}<br/><p>${tpl.icerik.replace(/\n/g, "<br/>")}</p>`;
+        li.addEventListener("click", () => {
+          fillFormFromTemplate(tpl);
+          tabForm.click();
+        });
+        templateList.appendChild(li);
+      });
+    }
+
+    function fillFormFromTemplate(tpl) {
+      isTemplateUsed = true; // Bayrağı true yap
+      document.getElementById("konu").value = tpl.konu;
+      document.getElementById("kurum").value = tpl.kurum;
+      document.getElementById("icerik").value = tpl.icerik;
+    }
+
+    renderTemplates();
+
+    // Tarih formatlama
+    function formatDate(dateStr) {
+      if (!dateStr) return "";
+      const dt = new Date(dateStr);
+      const day = dt.getDate().toString().padStart(2, "0");
+      const month = (dt.getMonth() + 1).toString().padStart(2, "0");
+      const year = dt.getFullYear();
+      return `${day}/${month}/${year}`;
+    }
+
+    // Formdan veri al
+    function getFormData() {
+      return {
+        kurum: document.getElementById("kurum").value.trim(),
+        konu: document.getElementById("konu").value.trim(),
+        icerik: document.getElementById("icerik").value.trim(),
+        tarih: formatDate(document.getElementById("tarih").value),
+        isim: document.getElementById("isim").value.trim(),
+        ekler: document
+          .getElementById("ekler")
+          .value.split("\n")
+          .map((s) => s.trim())
+          .filter((s) => s.length > 0),
+        adres: document.getElementById("adres").value.trim(),
+        telefon: document.getElementById("telefon").value.trim(),
+      };
+    }
+
+    // Önizleme oluştur
+    function buildPreviewText(data) {
+      let preview = "";
+
+      preview += data.kurum.toUpperCase() + "\n\n";
+
+      if (data.konu) {
+        preview += "Konu: " + data.konu + "\n\n";
+      }
+
+      preview += data.icerik + "\n\n";
+
+      // Sadece hazır şablon kullanılmadıysa ekle
+      if (!isTemplateUsed) {
+        preview += "Gereğini arz ederim.\n\n";
+      }
+
+      preview += data.tarih + "\n";
+      preview += data.isim.toUpperCase() + "\n\n";
+
+      if (data.ekler.length > 0) {
+        preview += "Ek: " + data.ekler.join(", ") + "\n\n";
+      }
+
+      if (data.adres || data.telefon) {
+        if (data.adres) preview += "Adres: " + data.adres + "\n";
+        if (data.telefon) preview += "Tel: " + data.telefon + "\n";
+      }
+
+      return preview;
+    }
+
+    function renderPreview(text) {
+      const previewDiv = document.getElementById("preview");
+      previewDiv.textContent = text;
+      previewDiv.focus();
+    }
+
+    document.getElementById("previewBtn").addEventListener("click", () => {
+      const data = getFormData();
+      const previewText = buildPreviewText(data);
+      renderPreview(previewText);
+    });
+
+    // Word belgesi oluşturma fonksiyonu (metadata ile)
+    async function buildDocxDocument(data) {
+      const children = [];
+
+      children.push(
+        new Paragraph({
+          text: data.kurum.toUpperCase(),
+          bold: true,
+          alignment: AlignmentType.CENTER,
+          spacing: { after: 300 },
+          size: 28,
+        })
+      );
+
+      if (data.konu) {
+        children.push(
+          new Paragraph({
+            children: [
+              new TextRun({ text: "Konu: ", bold: true }),
+              new TextRun(data.konu),
+            ],
+            spacing: { after: 400 },
+          })
+        );
+      }
+
+      children.push(
+        new Paragraph({
+          text: data.icerik,
+          spacing: { after: 400 },
+        })
+      );
+
+      // Sadece hazır şablon kullanılmadıysa ekle
+      if (!isTemplateUsed) {
+        children.push(
+          new Paragraph({
+            text: "Gereğini arz ederim.",
+            spacing: { after: 400 },
+          })
+        );
+      }
+
+      children.push(
+        new Paragraph({
+          text: data.tarih,
+          alignment: AlignmentType.RIGHT,
+          spacing: { after: 100 },
+        })
+      );
+      children.push(
+        new Paragraph({
+          text: data.isim.toUpperCase(),
+          alignment: AlignmentType.RIGHT,
+          bold: true,
+          spacing: { after: 600 },
+        })
+      );
+
+      if (data.ekler.length > 0) {
+        children.push(
+          new Paragraph({
+            text: "Ek: " + data.ekler.join(", "),
+            spacing: { after: 400 },
+          })
+        );
+      }
+
+      if (data.adres || data.telefon) {
+        if (data.adres) {
+          children.push(
+            new Paragraph({
+              text: "Adres: " + data.adres,
+              spacing: { after: 100 },
+            })
+          );
+        }
+        if (data.telefon) {
+          children.push(
+            new Paragraph({
+              text: "Tel: " + data.telefon,
+              spacing: { after: 400 },
+            })
+          );
+        }
+      }
+
+      return new Document({
+        creator: "Dilekçe Yazma Yardımcısı",
+        description: "Otomatik oluşturulmuş dilekçe",
+        title: "Dilekçe",
+        sections: [
+          {
+            properties: {
+              page: {
+                margin: { top: 1440, right: 1440, bottom: 1440, left: 1440 },
+              },
+            },
+            children,
+          },
+        ],
+      });
+    }
+
+    document.getElementById("dilekceForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const data = getFormData();
+
+      try {
+        const doc = await buildDocxDocument(data);
+        const blob = await Packer.toBlob(doc);
+        const fileName = "dilekce.docx";
+
+        if (window.navigator && window.navigator.msSaveOrOpenBlob) {
+          window.navigator.msSaveOrOpenBlob(blob, fileName);
+        } else {
+          const url = window.URL.createObjectURL(blob);
+          const a = document.createElement("a");
+          a.href = url;
+          a.download = fileName;
+          document.body.appendChild(a);
+          a.click();
+          a.remove();
+          setTimeout(() => window.URL.revokeObjectURL(url), 1000);
+        }
+      } catch (error) {
+        alert("Dosya oluşturulurken hata oluştu: " + error.message);
+        console.error(error);
+      }
+    });
+
+    // Sayfa yüklendiğinde bugünün tarihini otomatik atama
+    window.addEventListener("load", () => {
+      const today = new Date().toISOString().split("T")[0];
+      document.getElementById("tarih").value = today;
+    });
+  </script>
+</body>
+</html>
+<!-- partial -->
+  
+</body>
+</html>
